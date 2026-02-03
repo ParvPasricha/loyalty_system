@@ -60,3 +60,7 @@ loyalty-platform/
 - `pnpm dev` for api
 
 (Exact scripts will be defined per-app as they are scaffolded.)
+
+## Testing
+
+- `pnpm test` runs integration tests against Postgres/Redis via Docker Compose.

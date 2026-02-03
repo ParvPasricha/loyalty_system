@@ -6,17 +6,21 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm run test:integration",
+    "test:integration": "tsx --test tests/integration.test.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@fastify/cookie": "^9.3.1",
     "@fastify/rate-limit": "^9.2.1",
-    "@fastify/request-id": "^5.1.0",
     "@fastify/swagger": "^8.14.0",
-    "@fastify/swagger-ui": "^2.2.0",
+    "@fastify/swagger-ui": "^5.2.5",
     "@loyalty/db": "workspace:*",
     "@loyalty/shared": "workspace:*",
     "fastify": "^4.28.1",
+    "fastify-request-id": "^4.0.0",
     "jsonwebtoken": "^9.0.2",
     "pino": "^9.2.0",
     "zod": "^3.23.8",
