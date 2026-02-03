@@ -9,8 +9,9 @@
   ],
   "scripts": {
     "dev": "echo \"Run dev scripts within apps/*\"",
-    "build": "echo \"Run build scripts within apps/*\"",
-    "lint": "echo \"Run lint scripts within apps/*\"",
-    "test": "echo \"Run test scripts within apps/*\""
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "scripts/test-integration.sh"
   }
 }

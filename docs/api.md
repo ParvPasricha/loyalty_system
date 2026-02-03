@@ -2,9 +2,15 @@
 
 ## Public/customer
 
+- `GET /m/:slug`
+  - Merchant QR doorway that creates/restores device session and redirects to `/c/:publicToken`.
+
 - `POST /public/session/init`
   - Returns existing or newly issued `public_token`.
   - Uses device cookies/localStorage `device_id` to restore customers.
+
+- `GET /c/:publicToken`
+  - Customer card page (HTML) that loads public card data.
 
 - `GET /public/card/:publicToken`
   - Returns points balance, rewards, and merchant branding.
@@ -34,11 +40,19 @@
 - `POST /redeem`
   - Atomic redemption (transaction + locking).
 
+- `POST /adjust`
+  - Owner-only balance adjustments with audit logs.
+
 - `GET /customers/:id/balance`
   - Returns computed balance.
 
 - `GET /customers/:id/ledger`
   - Returns ledger entries.
+
+## Staff
+
+- `POST /staff/:id/role`
+  - Owner-only staff role changes with audit logs.
 
 ## Merchant portal
 
@@ -54,3 +68,8 @@
 - `GET /wallet/apple/:publicToken` (pkpass)
 - `GET /wallet/google/:publicToken` (add link)
 - `GET /wallet/samsung/:publicToken` (stub for later)
+
+## Observability
+
+- `GET /metrics`
+  - Simple request/error counters for staging.
