@@ -1,0 +1,30 @@
+{
+  "name": "@loyalty/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@fastify/rate-limit": "^9.2.1",
+    "@fastify/request-id": "^5.1.0",
+    "@fastify/swagger": "^8.14.0",
+    "@fastify/swagger-ui": "^2.2.0",
+    "@loyalty/db": "workspace:*",
+    "@loyalty/shared": "workspace:*",
+    "fastify": "^4.28.1",
+    "jsonwebtoken": "^9.0.2",
+    "pino": "^9.2.0",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.3"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.6",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.4"
+  }
+}
