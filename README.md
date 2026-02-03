@@ -61,6 +61,23 @@ loyalty-platform/
 
 (Exact scripts will be defined per-app as they are scaffolded.)
 
+## Local testing workflow
+
+1. Start infra services:
+   - `docker compose -f infra/docker/docker-compose.yml up`
+2. Apply migrations + seed:
+   - `psql "$DATABASE_URL" -f packages/db/migrations/001_init.sql`
+   - `psql "$DATABASE_URL" -f packages/db/seed/001_seed.sql`
+3. Start the API:
+   - `pnpm --filter @loyalty/api dev`
+4. Start the web apps:
+   - `pnpm --filter @loyalty/web dev`
+   - `pnpm --filter @loyalty/terminal dev`
+5. Issue a staff JWT for testing staff endpoints:
+   - Set `MERCHANT_ID` + `STAFF_USER_ID` from the seeded demo merchant/user.
+   - Run `pnpm --filter @loyalty/api exec tsx scripts/issue-token.ts`
+6. Use the JWT as `Authorization: Bearer <token>` on staff endpoints.
+
 ## Delivery status
 
 ### Done (dev scaffolding)
