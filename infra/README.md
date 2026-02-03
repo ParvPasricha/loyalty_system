@@ -1,3 +1,9 @@
 # Infrastructure
 
-Docker, nginx, and deployment assets live here.
+Local Docker assets for Postgres and Redis.
+
+## Local services
+
+```
+docker compose -f docker/docker-compose.yml up
+```
