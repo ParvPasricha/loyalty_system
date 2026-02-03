@@ -1,0 +1,16 @@
+{
+  "name": "loyalty-platform",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "echo \"Run dev scripts within apps/*\"",
+    "build": "echo \"Run build scripts within apps/*\"",
+    "lint": "echo \"Run lint scripts within apps/*\"",
+    "test": "echo \"Run test scripts within apps/*\""
+  }
+}
