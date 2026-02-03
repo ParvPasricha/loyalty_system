@@ -60,3 +60,33 @@ loyalty-platform/
 - `pnpm dev` for api
 
 (Exact scripts will be defined per-app as they are scaffolded.)
+
+## Delivery status
+
+### Done (dev scaffolding)
+
+- Monorepo layout with apps/packages structure in place.
+- PostgreSQL schema migrations + seed scripts for core domain tables.
+- Local Docker Compose for Postgres + Redis.
+- Fastify API scaffold with JWT/RBAC, Zod validation, and core route stubs.
+- Next.js web apps for customer doorway/card/claim, portal, and terminal screens.
+
+### To reach testing readiness
+
+- Wire real auth flows (staff login, JWT rotation, RBAC guards with real users).
+- Replace in-memory claim verification with durable OTP/email workflow + storage.
+- Implement ledger balance guards, idempotency handling, and redemption atomicity checks with consistent error codes.
+- Add rate limiting + denylist + anomaly logging based on persistent stores.
+- Implement wallet pass generation and job queue processing (BullMQ).
+- Add request/response OpenAPI coverage and centralized error response format.
+- Add comprehensive unit/integration tests + fixtures, and CI pipelines (lint/typecheck/test/build).
+- Add CSP/security headers and production HTTPS configuration for web apps.
+
+### To reach ship readiness
+
+- Complete staff terminal workflows (scan → resolve → earn/redeem → success).
+- Complete merchant portal onboarding wizard and staff/reward management.
+- Finish customer claim/restore flows with wallet re-issue.
+- Build production logging/metrics + alerting dashboards.
+- Run acceptance tests and load testing for idempotency/redeem concurrency.
+- Complete deployment manifests (Fly/Render) and production secrets management.
