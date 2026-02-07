@@ -1,1 +1,10 @@
 node_modules
+
+# Local environment files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Keep committed templates for sharing defaults
+!.env.example
+!.env.test
