@@ -15,3 +15,5 @@ Run migrations with your preferred migration tool (e.g. `psql` or a migration ru
 psql "$DATABASE_URL" -f migrations/001_init.sql
 psql "$DATABASE_URL" -f seed/001_seed.sql
 ```
+
+Seed data includes a demo merchant and an owner staff user (`owner@demo.local`, password hash placeholder `dev-only`) for local testing.
