@@ -12,6 +12,13 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
-  }
+    "noFallthroughCasesInSwitch": true,
+    
+    "paths": {
+      "@loyalty/shared": ["../packages/shared/src/index.ts"],
+      "@loyalty/db": ["../packages/db/src/index.ts"],
+      "@loyalty/api": ["./src/app.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"]
 }

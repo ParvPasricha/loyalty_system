@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "paths": {
+      "@loyalty/shared": ["../../packages/shared/dist/index.d.ts"],
+      "@loyalty/shared/*": ["../../packages/shared/dist/*"],
+      "@loyalty/db": ["../../packages/db/dist/index.d.ts"]
+    }
+  },
+  "references": [
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/db" }
+  ]
+}

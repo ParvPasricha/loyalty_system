@@ -1,13 +1,8 @@
-import crypto from "node:crypto";
-import fastify, { type FastifyBaseLogger, type FastifyInstance, type FastifyRequest } from "fastify";
-import requestId from "fastify-request-id";
+import cookie from "@fastify/cookie";
+import rateLimit from "@fastify/rate-limit";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
-import rateLimit from "@fastify/rate-limit";
-import cookie from "@fastify/cookie";
-import jwt from "jsonwebtoken";
-import { z, ZodError } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { pool } from "@loyalty/db";
 import {
   EarnSchema,
   PublicCardParamsSchema,
@@ -15,7 +10,13 @@ import {
   RedeemSchema,
   StaffResolveSchema
 } from "@loyalty/shared";
-import { pool } from "@loyalty/db";
+import fastify, { type FastifyInstance, type FastifyRequest, type FastifyServerOptions } from "fastify";
+import requestId from "fastify-request-id";
+import jwt from "jsonwebtoken";
+import crypto from "node:crypto";
+import type { Pool, PoolClient } from "pg";
+import { z, ZodError } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
 type Role = "owner" | "manager" | "cashier";
 
@@ -25,9 +26,7 @@ type StaffContext = {
   role: Role;
 };
 
-type BuildAppOptions = {
-  logger?: FastifyBaseLogger | boolean;
-};
+type BuildAppOptions = Pick<FastifyServerOptions, "logger">;
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -53,7 +52,7 @@ if (!accessSecret) {
 }
 
 const toSchema = (schema: z.ZodTypeAny, name: string) =>
-  zodToJsonSchema(schema, {
+  (zodToJsonSchema as unknown as (schema: z.ZodTypeAny, options: { name: string }) => object)(schema, {
     name
   });
 
@@ -123,7 +122,7 @@ const logAudit = async (
     targetId: string;
     meta?: Record<string, unknown>;
   },
-  client = pool
+  client: Pool | PoolClient = pool
 ) => {
   await client.query(
     `INSERT INTO audit_logs (merchant_id, staff_user_id, action, target_type, target_id, meta)
@@ -232,15 +231,15 @@ const publicCardHtml = (publicToken: string) => `<!doctype html>
     </div>
     <script>
       const rewardsList = document.getElementById("rewards");
-      fetch(`/public/card/${publicToken}`)
+      fetch(\`/public/card/${publicToken}\`)
         .then((res) => res.json())
         .then((data) => {
           document.getElementById("merchant").textContent = data.merchant.name;
-          document.getElementById("balance").textContent = `${data.balance} pts`;
+          document.getElementById("balance").textContent = \`\${data.balance} pts\`;
           rewardsList.innerHTML = "";
           data.rewards.forEach((reward) => {
             const item = document.createElement("li");
-            item.textContent = `${reward.name} • ${reward.points_cost} pts`;
+            item.textContent = \`\${reward.name} • \${reward.points_cost} pts\`;
             rewardsList.appendChild(item);
           });
         })
@@ -261,8 +260,9 @@ export const buildApp = ({ logger = { level: "info" } }: BuildAppOptions = {}): 
   });
 
   app.addHook("onResponse", async (request, _reply) => {
-    if (request.routerPath) {
-      recordRoute(request.method, request.routerPath);
+    const routePath = request.routeOptions?.url;
+    if (routePath) {
+      recordRoute(request.method, routePath);
     }
   });
 
@@ -1038,7 +1038,7 @@ export const buildApp = ({ logger = { level: "info" } }: BuildAppOptions = {}): 
         const inserted = insertLedger.rows[0];
         let ledgerEntryId = inserted?.id;
         let idempotent = false;
-        let resolvedRedemptionId = redemptionId;
+        let resolvedRedemptionId: string = redemptionId;
         if (!ledgerEntryId) {
           idempotent = true;
           const existingLedger = await client.query<{ id: string; external_id: string | null }>(

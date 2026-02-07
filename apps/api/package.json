@@ -5,26 +5,28 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc -p tsconfig.json",
-    "lint": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -b tsconfig.build.json",
+    "lint": "tsc -b tsconfig.build.json --noEmit",
     "test": "pnpm run test:integration",
     "test:integration": "tsx --test tests/integration.test.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -b tsconfig.build.json --noEmit",
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@fastify/cookie": "^9.3.1",
-    "@fastify/rate-limit": "^9.2.1",
-    "@fastify/swagger": "^8.14.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/rate-limit": "^10.0.0",
+    "@fastify/swagger": "^9.7.0",
     "@fastify/swagger-ui": "^5.2.5",
-    "@loyalty/db": "workspace:*",
     "@loyalty/shared": "workspace:*",
-    "fastify": "^4.28.1",
-    "fastify-request-id": "^4.0.0",
+    "@loyalty/db": "workspace:*",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.7.4",
+    "fastify-request-id": "^1.0.0",
     "jsonwebtoken": "^9.0.2",
-    "pino": "^9.2.0",
+    "pino": "^10.3.0",
     "zod": "^3.23.8",
     "zod-to-json-schema": "^3.23.3"
+    
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",

@@ -1,8 +1,21 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "composite": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "@loyalty/shared": ["../../packages/shared/src/index.ts"],
+      "@loyalty/shared/*": ["../../packages/shared/src/*"],
+      "@loyalty/db": ["../../packages/db/src/index.ts"],
+        "@loyalty/api": ["./src/app.ts"]
+    }
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }
