@@ -12,5 +12,16 @@
     "build": "echo \"Run build scripts within apps/*\"",
     "lint": "echo \"Run lint scripts within apps/*\"",
     "test": "echo \"Run test scripts within apps/*\""
+  },
+  "dependencies": {
+    "@fastify/jwt": "^9.0.0",
+    "@fastify/rate-limit": "^9.0.1",
+    "@fastify/swagger": "^9.1.0",
+    "@fastify/swagger-ui": "^3.0.0",
+    "@types/node": "^20.14.10",
+    "@types/pg": "^8.16.0",
+    "fastify": "^4.28.1",
+    "typescript": "^5.5.4",
+    "zod": "^3.23.8"
   }
 }

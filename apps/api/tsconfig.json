@@ -1,4 +1,5 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES2022",
     "module": "NodeNext",
@@ -7,7 +8,14 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@loyalty/shared": ["../../packages/shared/src/index.ts"],
+      "@loyalty/shared/*": ["../../packages/shared/src/*"],
+      "@loyalty/db": ["../../packages/db/src/index.ts"],
+        "@loyalty/api": ["./src/server.ts"]
+    }
   },
   "include": ["src/**/*"]
 }

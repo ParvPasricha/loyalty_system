@@ -1,9 +1,8 @@
-import crypto from "node:crypto";
-import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import jwt from "@fastify/jwt";
 import rateLimit from "@fastify/rate-limit";
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
+import { query, withTransaction } from "@loyalty/db";
 import {
   EarnSchema,
   PublicClaimStartSchema,
@@ -14,7 +13,8 @@ import {
   TokenResolveSchema,
   TokenRevokeSchema,
 } from "@loyalty/shared";
-import { query, withTransaction } from "@loyalty/db";
+import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
+import crypto from "node:crypto";
 import { z } from "zod";
 
 type Role = "owner" | "manager" | "cashier";
@@ -36,7 +36,7 @@ const app = Fastify({
 
 const inMemoryClaims = new Map<string, { publicToken: string; code: string; expiresAt: number }>();
 
-app.setErrorHandler((error, request, reply) => {
+app.setErrorHandler((error: any, request, reply) => {
   request.log.error({ err: error, requestId: request.id }, "request_error");
   reply.status(error.statusCode ?? 500).send({
     error: {
@@ -80,11 +80,7 @@ function requireRole(roles: Role[]) {
       return reply.status(401).send({ error: { message: "Unauthorized", request_id: request.id } });
     }
     const token = auth.slice("Bearer ".length);
-    const payload = (await request.jwtVerify<{ staff_user_id: string; merchant_id: string; role: Role }>({ token })) as {
-      staff_user_id: string;
-      merchant_id: string;
-      role: Role;
-    };
+    const payload = app.jwt.verify<{ staff_user_id: string; merchant_id: string; role: Role }>(token);
     if (!roles.includes(payload.role)) {
       return reply.status(403).send({ error: { message: "Forbidden", request_id: request.id } });
     }
@@ -125,12 +121,16 @@ app.post("/public/session/init", { config: { rateLimit: { max: 30, timeWindow: "
 
   const publicToken = getPublicToken();
 
-  await withTransaction(async (client) => {
+   await withTransaction(async (client) => {
     const customerResult = await client.query<{ id: string }>(
       "INSERT INTO customers (merchant_id, status) VALUES ($1, 'active') RETURNING id",
       [merchantId],
     );
-    const customerId = customerResult.rows[0].id;
+    const customerRow = customerResult.rows[0];
+    if (!customerRow) {
+      throw new Error("Failed to create customer");
+    }
+    const customerId = customerRow.id;
     await client.query(
       "INSERT INTO customer_tokens (merchant_id, customer_id, type, public_token, status) VALUES ($1, $2, 'qr', $3, 'active')",
       [merchantId, customerId, publicToken],
@@ -390,7 +390,7 @@ app.post("/merchant/rewards", { preHandler: requireRole(["manager", "owner"]) },
     })
     .parse(request.body);
   const merchantId = request.staff?.merchant_id;
-  const reward = await query(
+  const reward = await query<{ id: string }>(
     "INSERT INTO rewards (merchant_id, name, points_cost, active) VALUES ($1, $2, $3, $4) RETURNING id",
     [merchantId, body.name, body.points_cost, body.active],
   );

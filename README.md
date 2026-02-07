@@ -56,6 +56,10 @@ loyalty-platform/
 
 ## Development
 
+- `pnpm --filter @loyalty/api build`
+- `pnpm --filter @loyalty/shared build`
+- `pnpm --filter @loyalty/db build`
+
 - `pnpm dev` for web/terminal
 - `pnpm dev` for api
 
