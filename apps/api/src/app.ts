@@ -34,6 +34,7 @@ declare module "fastify" {
   }
 }
 
+
 class ApiError extends Error {
   constructor(
     public status: number,
@@ -251,9 +252,8 @@ const publicCardHtml = (publicToken: string) => `<!doctype html>
 </html>`;
 
 export const buildApp = ({ logger = { level: "info" } }: BuildAppOptions = {}): FastifyInstance => {
-  const app = fastify({
-    logger
-  });
+  const app = fastify({ logger });
+
 
   app.addHook("onRequest", async (_request, _reply) => {
     metrics.requests += 1;
@@ -325,6 +325,9 @@ export const buildApp = ({ logger = { level: "info" } }: BuildAppOptions = {}): 
       return;
     }
 
+    if (process.env.LOG_LEVEL) {
+      console.error(error);
+    }
     request.log.error({ err: error }, "Unhandled error");
     reply.status(500).send({
       request_id: request.id,
@@ -1164,6 +1167,9 @@ export const buildApp = ({ logger = { level: "info" } }: BuildAppOptions = {}): 
       };
     }
   );
-
+app.ready().then(() => {
+  // prints all routes
+  console.log(app.printRoutes());
+});
   return app;
 };

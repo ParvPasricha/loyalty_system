@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: loyalty
       POSTGRES_PASSWORD: loyalty
-      POSTGRES_DB: loyalty
+      POSTGRES_DB: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

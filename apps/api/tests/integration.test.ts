@@ -1,9 +1,15 @@
-import { after, before, describe, it } from "node:test";
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import jwt from "jsonwebtoken";
+import { dirname, resolve } from "node:path";
+import { after, before, describe, it } from "node:test";
+import { fileURLToPath } from "node:url";
 import { Pool } from "pg";
+import { buildApp } from "../src/app.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: resolve(__dirname, "../../../.env") });
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -16,7 +22,7 @@ process.env.JWT_ACCESS_SECRET = jwtSecret;
 const pool = new Pool({ connectionString: databaseUrl });
 
 const migrate = async () => {
-  const migrationPath = join(process.cwd(), "packages", "db", "migrations", "001_init.sql");
+  const migrationPath = resolve(__dirname, "../../../packages/db/migrations/001_init.sql");
   const sql = await readFile(migrationPath, "utf-8");
   await pool.query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
   await pool.query(sql);
@@ -27,7 +33,7 @@ let seedCounter = 0;
 const seedMerchant = async () => {
   seedCounter += 1;
   const slug = `coffee-bar-${seedCounter}`;
-  const publicToken = `public-token-${seedCounter}`;
+  const publicToken = `public-token-${seedCounter}`.padEnd(16, "x");
   const email = `cashier-${seedCounter}@coffee.test`;
   const merchantResult = await pool.query<{ id: string; slug: string }>(
     "INSERT INTO merchants (slug, name) VALUES ($1, 'Coffee Bar') RETURNING id, slug",
@@ -77,7 +83,8 @@ describe("ledger idempotency and concurrency", () => {
   before(async () => {
     await migrate();
     const module = await import("../src/app.js");
-    app = module.buildApp({ logger: false });
+    const logger = process.env.LOG_LEVEL ? { level: process.env.LOG_LEVEL } : false;
+    app = module.buildApp({ logger });
     await app.listen({ port: 0, host: "127.0.0.1" });
     const address = app.server.address();
     if (typeof address === "string" || !address) {
@@ -106,6 +113,10 @@ describe("ledger idempotency and concurrency", () => {
       },
       body: JSON.stringify(payload)
     });
+    if (response1.status !== 200) {
+  console.log("EARN status:", response1.status);
+  console.log("EARN body:", await response1.text());
+}
     assert.equal(response1.status, 200);
     const result1 = await response1.json();
     assert.equal(result1.idempotent, false);
